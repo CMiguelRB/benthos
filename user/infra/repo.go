@@ -14,20 +14,20 @@ import (
 
 type Repo struct {
 	getUsersQuery    string
-    getUserByIdQuery string
-    createUserQuery  string
-    updateUserQuery  string
-    deleteUserQuery  string
+	getUserByIdQuery string
+	createUserQuery  string
+	updateUserQuery  string
+	deleteUserQuery  string
 }
 
 func NewRepo() *Repo {
 	return &Repo{
-        getUsersQuery:    "SELECT * FROM users ORDER BY created_on ASC",
-        getUserByIdQuery: "SELECT * FROM users WHERE id = $1",
-        createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
-        updateUserQuery:  "UPDATE users SET username = $1, password = $2, updated_on = $3 WHERE id = $4",
-        deleteUserQuery:  "DELETE FROM users WHERE id = $1",
-    }
+		getUsersQuery:    "SELECT * FROM users ORDER BY created_on ASC",
+		getUserByIdQuery: "SELECT * FROM users WHERE id = $1",
+		createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
+		updateUserQuery:  "UPDATE users SET username = $1, password = $2, updated_on = $3 WHERE id = $4",
+		deleteUserQuery:  "DELETE FROM users WHERE id = $1",
+	}
 }
 
 func (r *Repo) GetUsers(ctx context.Context) (users []dom.User, error error) {
@@ -79,7 +79,7 @@ func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, err
 
 func (r *Repo) CreateUser(ctx context.Context, user dom.User) (string, error) {
 
-	password, err := sec.Encrypt(user.Password)	
+	password, err := sec.Encrypt(user.Password)
 
 	if err != nil {
 		slog.Error(err.Error())
@@ -88,7 +88,7 @@ func (r *Repo) CreateUser(ctx context.Context, user dom.User) (string, error) {
 
 	var id string
 	err = db.Pool.QueryRow(ctx, r.createUserQuery, user.Username, password).Scan(&id)
-	
+
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -97,8 +97,8 @@ func (r *Repo) CreateUser(ctx context.Context, user dom.User) (string, error) {
 }
 
 func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64, error) {
-	
-	password, err := sec.Encrypt(user.Password)	
+
+	password, err := sec.Encrypt(user.Password)
 
 	if err != nil {
 		slog.Error(err.Error())
@@ -108,7 +108,7 @@ func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64,
 	datetime := time.Now()
 
 	res, err := db.Pool.Exec(ctx, r.updateUserQuery, user.Username, password, datetime, id)
-	
+
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -117,7 +117,6 @@ func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64,
 }
 
 func (r *Repo) DeleteUser(ctx context.Context, id string) (int64, error) {
-
 
 	res, err := db.Pool.Exec(ctx, r.deleteUserQuery, id)
 

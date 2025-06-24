@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"benthos/common/res"
+	common "benthos/common/res"
 	"benthos/user/app"
 	"benthos/user/dom"
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 )
 
 type Handler struct {
-	service *app.Service
+	service   *app.Service
 	validator *UserValidator
 }
 
@@ -56,7 +56,7 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 
 	user := dom.User{}
 
-	if validation := validateBody(h, r, &user); len(validation.Error) > 0{
+	if validation := validateBody(h, r, &user); len(validation.Error) > 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(validation)
 		return
@@ -79,7 +79,7 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 
 	user := dom.User{}
 
-	if validation := validateBody(h, r, &user); len(validation.Error) > 0{
+	if validation := validateBody(h, r, &user); len(validation.Error) > 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(validation)
 		return
@@ -111,9 +111,8 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-func validateBody(h *Handler, r *http.Request, user *dom.User) (result common.ErrorResponse){
+func validateBody(h *Handler, r *http.Request, user *dom.User) (result common.ErrorResponse) {
 
-	
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
@@ -130,7 +129,7 @@ func validateBody(h *Handler, r *http.Request, user *dom.User) (result common.Er
 			Success: false,
 		}
 		return result
-    }
+	}
 
 	return
 }

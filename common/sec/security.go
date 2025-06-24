@@ -18,7 +18,7 @@ func Encrypt(input string) (output string, err error) {
 		err = errors.New("Encryption key not found")
 		return "", err
 	}
-	
+
 	iv := make([]byte, 16)
 	blockSize := aes.BlockSize
 	_, err = rand.Read(iv)
@@ -54,7 +54,7 @@ func Decrypt(input string) (output string, err error) {
 
 	inputBytes := []byte(inputHex)
 
-	if(len(inputBytes) < 16){
+	if len(inputBytes) < 16 {
 		err = errors.New("Index out of bounds: decrypting input string")
 		return "", err
 	}

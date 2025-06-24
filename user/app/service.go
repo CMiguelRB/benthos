@@ -1,7 +1,7 @@
 package app
 
 import (
-	"benthos/common/res"
+	common "benthos/common/res"
 	"benthos/user/dom"
 	"context"
 )

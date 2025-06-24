@@ -12,7 +12,7 @@ var userIdPath = userPath + "/{id}"
 
 type UserRoutes struct {
 	handler *Handler
-	ctx *context.Context
+	ctx     *context.Context
 }
 
 func NewUserRoutes(service *app.Service) *UserRoutes {
