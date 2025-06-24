@@ -7,13 +7,21 @@ import (
 	"log"
 	"log/slog"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 
+	var err error
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	context := context.Background()
 
-	err := db.Connect(context)
+	err = db.Connect(context)
 
 	if err != nil {
 		log.Fatal(db.Connect(context))
