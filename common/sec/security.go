@@ -27,13 +27,13 @@ func Encrypt(input string) (output string, err error) {
 	}
 
 	padding := (blockSize - len(input)%blockSize)
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	intputBytes := append([]byte(input), padtext...)
+	padText := bytes.Repeat([]byte{byte(padding)}, padding)
+	inputBytes := append([]byte(input), padText...)
 
 	block, _ := aes.NewCipher(key)
-	cipherText := make([]byte, len(intputBytes))
+	cipherText := make([]byte, len(inputBytes))
 	mode := cipher.NewCBCEncrypter(block, iv)
-	mode.CryptBlocks(cipherText, intputBytes)
+	mode.CryptBlocks(cipherText, inputBytes)
 	result := hex.EncodeToString(iv) + hex.EncodeToString(cipherText)
 	return result, err
 }
@@ -76,11 +76,11 @@ func Decrypt(input string) (output string, err error) {
 		return "", nil
 	}
 
-	padlen := int(cipherText[length-1])
-	if padlen > length || padlen == 0 {
+	padLen := int(cipherText[length-1])
+	if padLen > length || padLen == 0 {
 		return "nil", nil
 	}
-	cipherText = cipherText[:length-padlen]
+	cipherText = cipherText[:length-padLen]
 
 	return string(cipherText), err
 }

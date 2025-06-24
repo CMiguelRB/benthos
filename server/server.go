@@ -17,12 +17,12 @@ func New(ctx *context.Context) *http.Server {
 	userService := userApp.NewService(userRepo)
 	userRoutes := userInfra.NewUserRoutes(userService)
 
-	var configurators = []common.RouteConfigurator{
+	var routesSetup = []common.RouteSetup{
 		userRoutes,
 	}
 
-	for _, configurator := range configurators {
-		configurator.Configure(mux)
+	for _, routeSetup := range routesSetup {
+		routeSetup.Configure(mux)
 	}
 
 	return &http.Server{
