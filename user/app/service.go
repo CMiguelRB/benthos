@@ -1,8 +1,8 @@
 package app
 
 import (
-	"benthos_go/common"
-	"benthos_go/user/dom"
+	"benthos/common/res"
+	"benthos/user/dom"
 	"context"
 )
 
@@ -14,11 +14,11 @@ func NewService(repo UserRepo) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) GetUsers(ctx context.Context) (result common.Result[dom.User]) {
+func (s *Service) GetUsers(ctx context.Context) (result common.QResult[dom.User]) {
 
 	users, err := s.repo.GetUsers(ctx)
 
-	result = common.Result[dom.User]{
+	result = common.QResult[dom.User]{
 		Success: false,
 	}
 
@@ -32,11 +32,11 @@ func (s *Service) GetUsers(ctx context.Context) (result common.Result[dom.User])
 	return result
 }
 
-func (s *Service) GetUserById(ctx context.Context, id string) (result common.Result[dom.User]) {
+func (s *Service) GetUserById(ctx context.Context, id string) (result common.QResult[dom.User]) {
 
 	user, err := s.repo.GetUserById(ctx, id)
 
-	result = common.Result[dom.User]{
+	result = common.QResult[dom.User]{
 		Success: false,
 	}
 
@@ -54,59 +54,35 @@ func (s *Service) GetUserById(ctx context.Context, id string) (result common.Res
 	return result
 }
 
-
-func (s *Service) CreateUser(ctx context.Context, user dom.User) (result common.Result[common.ActionResult]) {
+func (s *Service) CreateUser(ctx context.Context, user dom.User) (result common.WResult) {
 
 	res, err := s.repo.CreateUser(ctx, user)
 
-	result = common.Result[common.ActionResult]{
-		Success: false,
-	}
-
-	if err != nil {
-		result.Error = err.Error()
-	} else {
-		result.Data =  []common.ActionResult{{AffectedRows: res}}
-		if res == 0 {
-			result.Success = false
-		}
-		result.Success = true
-	}
-
-	return result
+	return createWResult(res, err)
 }
 
-func (s *Service) UpdateUser(ctx context.Context, id string, user dom.User) (result common.Result[common.ActionResult]){
+func (s *Service) UpdateUser(ctx context.Context, id string, user dom.User) (result common.WResult) {
 	res, err := s.repo.UpdateUser(ctx, id, user)
 
-	result = common.Result[common.ActionResult]{
-		Success: false,
-	}
-
-	if err != nil {
-		result.Error = err.Error()
-	} else {
-		result.Data =  []common.ActionResult{{AffectedRows: res}}
-		if res == 0 {
-			result.Success = false
-		}
-		result.Success = true
-	}
-
-	return result
+	return createWResult(res, err)
 }
 
-func (s *Service) DeleteUser(ctx context.Context, id string) (result common.Result[common.ActionResult]){
+func (s *Service) DeleteUser(ctx context.Context, id string) (result common.WResult) {
 	res, err := s.repo.DeleteUser(ctx, id)
 
-	result = common.Result[common.ActionResult]{
+	return createWResult(res, err)
+}
+
+func createWResult(res int64, err error) (result common.WResult) {
+
+	result = common.WResult{
 		Success: false,
 	}
 
 	if err != nil {
 		result.Error = err.Error()
 	} else {
-		result.Data =  []common.ActionResult{{AffectedRows: res}}
+		result.AffectedRows = res
 		if res == 0 {
 			result.Success = false
 		}

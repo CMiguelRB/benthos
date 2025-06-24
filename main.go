@@ -1,8 +1,8 @@
 package main
 
 import (
-	"benthos_go/server"
-	"benthos_go/db"
+	"benthos/db"
+	"benthos/server"
 	"context"
 	"log"
 	"log/slog"
@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(db.Connect(context))
 	}
 
-    srv := server.New(&context)
-    slog.Info("Server running in port " + strings.Split(srv.Addr, ":")[1])
-    log.Fatal(srv.ListenAndServe())
+	srv := server.New(&context)
+	slog.Info("Server running in port " + strings.Split(srv.Addr, ":")[1])
+	log.Fatal(srv.ListenAndServe())
 }

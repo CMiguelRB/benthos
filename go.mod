@@ -1,4 +1,4 @@
-module benthos_go
+module benthos
 
 go 1.24.4
 

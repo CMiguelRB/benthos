@@ -1,8 +1,9 @@
 package infra
 
 import (
-	"benthos_go/user/app"
-	"benthos_go/user/dom"
+	"benthos/common/res"
+	"benthos/user/app"
+	"benthos/user/dom"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 
 type Handler struct {
 	service *app.Service
+	validator *UserValidator
 }
 
 var contentType string = "Content-Type"
@@ -54,10 +56,11 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(contentType, applicationJson)
 
 	user := dom.User{}
-	err := json.NewDecoder(r.Body).Decode(&user)
 
-	if err != nil {
+	if validation := validateBody(h, r, &user); len(validation.Error) > 0{
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(validation)
+		return
 	}
 
 	result := h.service.CreateUser(context.Background(), user)
@@ -76,10 +79,11 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	user := dom.User{}
-	err := json.NewDecoder(r.Body).Decode(&user)
 
-	if err != nil {
+	if validation := validateBody(h, r, &user); len(validation.Error) > 0{
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(validation)
+		return
 	}
 
 	result := h.service.UpdateUser(context.Background(), id, user)
@@ -106,4 +110,28 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(result)
+}
+
+func validateBody(h *Handler, r *http.Request, user *dom.User) (result common.ErrorResponse){
+
+	
+	err := json.NewDecoder(r.Body).Decode(&user)
+
+	if err != nil {
+		result = common.ErrorResponse{
+			Error:   []common.Error{{Code: "EUSRG1", Message: "Invalid JSON"}},
+			Success: false,
+		}
+		return result
+	}
+
+	if validationErrors := h.validator.ValidateUser(user); len(validationErrors) > 0 {
+		result = common.ErrorResponse{
+			Error:   validationErrors,
+			Success: false,
+		}
+		return result
+    }
+
+	return
 }

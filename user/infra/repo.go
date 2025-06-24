@@ -5,23 +5,34 @@ import (
 	"log/slog"
 	"time"
 
-	"benthos_go/db"
-	"benthos_go/user/dom"
-	"benthos_go/common"
+	sec "benthos/common/sec"
+	"benthos/db"
+	"benthos/user/dom"
 
 	"github.com/jackc/pgx/v5"
 )
 
 type Repo struct {
+	getUsersQuery    string
+    getUserByIdQuery string
+    createUserQuery  string
+    updateUserQuery  string
+    deleteUserQuery  string
 }
 
 func NewRepo() *Repo {
-	return &Repo{}
+	return &Repo{
+        getUsersQuery:    "SELECT * FROM users",
+        getUserByIdQuery: "SELECT * FROM users WHERE id = $1",
+        createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2)",
+        updateUserQuery:  "UPDATE users SET username = $1, password = $2, updated_on = $3 WHERE id = $4",
+        deleteUserQuery:  "DELETE FROM users WHERE id = $1",
+    }
 }
 
 func (r *Repo) GetUsers(ctx context.Context) (users []dom.User, error error) {
 
-	rows, err := db.Pool.Query(ctx, "SELECT * from users;")
+	rows, err := db.Pool.Query(ctx, r.getUsersQuery)
 	if err != nil {
 		slog.Error(err.Error())
 		return nil, err
@@ -30,8 +41,8 @@ func (r *Repo) GetUsers(ctx context.Context) (users []dom.User, error error) {
 
 	users, err = pgx.CollectRows(rows, pgx.RowToStructByName[dom.User])
 
-	for  i := 0; i<len(users); i++{
-		decryptedPassword, err := common.Decrypt(users[i].Password)
+	for i := 0; i < len(users); i++ {
+		decryptedPassword, err := sec.Decrypt(users[i].Password)
 		if err != nil {
 			slog.Error(err.Error())
 			return nil, err
@@ -44,7 +55,7 @@ func (r *Repo) GetUsers(ctx context.Context) (users []dom.User, error error) {
 
 func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, error error) {
 
-	rows, err := db.Pool.Query(ctx, "SELECT * from users where id = '"+id+"';")
+	rows, err := db.Pool.Query(ctx, r.getUserByIdQuery, id)
 
 	if err != nil {
 		slog.Error(err.Error())
@@ -54,8 +65,8 @@ func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, err
 
 	user, err = pgx.CollectRows(rows, pgx.RowToStructByName[dom.User])
 
-	for  i := 0; i<len(user); i++{
-		decryptedPassword, err := common.Decrypt(user[i].Password)
+	for i := 0; i < len(user); i++ {
+		decryptedPassword, err := sec.Decrypt(user[i].Password)
 		if err != nil {
 			slog.Error(err.Error())
 			return nil, err
@@ -67,22 +78,16 @@ func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, err
 }
 
 func (r *Repo) CreateUser(ctx context.Context, user dom.User) (int64, error) {
-	query := `INSERT INTO users (username, password, "createdOn") VALUES (@username, @password, @createdOn)`
 
-	password, err := common.Encrypt(user.Password)
+	password, err := sec.Encrypt(user.Password)	
 
 	if err != nil {
 		slog.Error(err.Error())
 		return 0, err
 	}
 
-	args := pgx.NamedArgs{
-		"username": user.Username,
-		"password": password,
-		"createdOn": time.Now(),
-	}
-
-	res, err := db.Pool.Exec(ctx, query, args)
+	res, err := db.Pool.Exec(ctx, r.createUserQuery, user.Username, password)
+	
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -91,23 +96,18 @@ func (r *Repo) CreateUser(ctx context.Context, user dom.User) (int64, error) {
 }
 
 func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64, error) {
-	query := `UPDATE users SET username = @username, password = @password, "updatedOn" = @updatedOn WHERE id = @id`
-
-	password, err := common.Encrypt(user.Password)
+	
+	password, err := sec.Encrypt(user.Password)	
 
 	if err != nil {
 		slog.Error(err.Error())
 		return 0, err
 	}
 
-	args := pgx.NamedArgs{
-		"username": user.Username,
-		"password": password,
-		"updatedOn": time.Now(),
-		"id": id,
-	}
+	datetime := time.Now()
 
-	res, err := db.Pool.Exec(ctx, query, args)
+	res, err := db.Pool.Exec(ctx, r.updateUserQuery, user.Username, password, datetime, id)
+	
 	if err != nil {
 		slog.Error(err.Error())
 	}
@@ -115,14 +115,9 @@ func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64,
 	return res.RowsAffected(), err
 }
 
-func (r *Repo) DeleteUser(ctx context.Context, id string) (int64, error){
-	query := `DELETE FROM users WHERE id = @id`
+func (r *Repo) DeleteUser(ctx context.Context, id string) (int64, error) {
 
-	args := pgx.NamedArgs{
-		"id": id,
-	}
-
-	res, err := db.Pool.Exec(ctx, query, args)
+	res, err := db.Pool.Exec(ctx, r.deleteUserQuery, id)
 
 	if err != nil {
 		slog.Error(err.Error())
