@@ -56,24 +56,24 @@ func (s *Service) GetUserById(ctx context.Context, id string) (result common.QRe
 
 func (s *Service) CreateUser(ctx context.Context, user dom.User) (result common.WResult) {
 
-	res, err := s.repo.CreateUser(ctx, user)
+	id, err := s.repo.CreateUser(ctx, user)
 
-	return createWResult(res, err)
+	return createWResult(&id, nil, err)
 }
 
 func (s *Service) UpdateUser(ctx context.Context, id string, user dom.User) (result common.WResult) {
-	res, err := s.repo.UpdateUser(ctx, id, user)
+	rows, err := s.repo.UpdateUser(ctx, id, user)
 
-	return createWResult(res, err)
+	return createWResult(nil, &rows, err)
 }
 
 func (s *Service) DeleteUser(ctx context.Context, id string) (result common.WResult) {
-	res, err := s.repo.DeleteUser(ctx, id)
+	rows, err := s.repo.DeleteUser(ctx, id)
 
-	return createWResult(res, err)
+	return createWResult(nil, &rows, err)
 }
 
-func createWResult(res int64, err error) (result common.WResult) {
+func createWResult(id *string, rows *int64, err error) (result common.WResult) {
 
 	result = common.WResult{
 		Success: false,
@@ -82,11 +82,12 @@ func createWResult(res int64, err error) (result common.WResult) {
 	if err != nil {
 		result.Error = err.Error()
 	} else {
-		result.AffectedRows = res
-		if res == 0 {
-			result.Success = false
+		if result.Id = id; id != nil {
+			result.Success = true
 		}
-		result.Success = true
+		if result.Rows = rows; rows != nil {
+			result.Success = true
+		}
 	}
 
 	return result

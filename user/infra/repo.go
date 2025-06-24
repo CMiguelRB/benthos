@@ -22,9 +22,9 @@ type Repo struct {
 
 func NewRepo() *Repo {
 	return &Repo{
-        getUsersQuery:    "SELECT * FROM users",
+        getUsersQuery:    "SELECT * FROM users ORDER BY created_on ASC",
         getUserByIdQuery: "SELECT * FROM users WHERE id = $1",
-        createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2)",
+        createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
         updateUserQuery:  "UPDATE users SET username = $1, password = $2, updated_on = $3 WHERE id = $4",
         deleteUserQuery:  "DELETE FROM users WHERE id = $1",
     }
@@ -77,22 +77,23 @@ func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, err
 	return user, err
 }
 
-func (r *Repo) CreateUser(ctx context.Context, user dom.User) (int64, error) {
+func (r *Repo) CreateUser(ctx context.Context, user dom.User) (string, error) {
 
 	password, err := sec.Encrypt(user.Password)	
 
 	if err != nil {
 		slog.Error(err.Error())
-		return 0, err
+		return "", err
 	}
 
-	res, err := db.Pool.Exec(ctx, r.createUserQuery, user.Username, password)
+	var id string
+	err = db.Pool.QueryRow(ctx, r.createUserQuery, user.Username, password).Scan(&id)
 	
 	if err != nil {
 		slog.Error(err.Error())
 	}
 
-	return res.RowsAffected(), err
+	return id, err
 }
 
 func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64, error) {
@@ -116,6 +117,7 @@ func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64,
 }
 
 func (r *Repo) DeleteUser(ctx context.Context, id string) (int64, error) {
+
 
 	res, err := db.Pool.Exec(ctx, r.deleteUserQuery, id)
 

@@ -1,7 +1,8 @@
 package common
 
 type WResult struct {
-	AffectedRows int64  `json:"rows"`
+	Rows *int64  `json:"rows,omitempty"`
+	Id *string `json:"id,omitempty"`
 	Error string `json:"error,omitempty"`
 	Success bool `json:"success"`
 }
