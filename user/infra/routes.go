@@ -12,6 +12,7 @@ var userIdPath = userPath + "/{id}"
 
 type UserRoutes struct {
 	handler *Handler
+	ctx *context.Context
 }
 
 func NewUserRoutes(service *app.Service) *UserRoutes {
@@ -20,7 +21,7 @@ func NewUserRoutes(service *app.Service) *UserRoutes {
 	}
 }
 
-func (r *UserRoutes) Configure(mux *chi.Mux, ctx *context.Context) {
+func (r *UserRoutes) Configure(mux *chi.Mux) {
 	mux.Get(userPath, r.handler.list)
 	mux.Get(userIdPath, r.handler.getById)
 	mux.Post(userPath, r.handler.create)

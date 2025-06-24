@@ -124,5 +124,4 @@ func (r *Repo) DeleteUser(ctx context.Context, id string) (int64, error) {
 	}
 
 	return res.RowsAffected(), err
-
 }

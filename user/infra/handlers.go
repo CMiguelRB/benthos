@@ -4,7 +4,6 @@ import (
 	"benthos/common/res"
 	"benthos/user/app"
 	"benthos/user/dom"
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -26,7 +25,7 @@ func NewHandler(service *app.Service) *Handler {
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(contentType, applicationJson)
 
-	result := h.service.GetUsers(context.Background())
+	result := h.service.GetUsers(r.Context())
 
 	if !result.Success {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -41,7 +40,7 @@ func (h *Handler) getById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(contentType, applicationJson)
 	id := chi.URLParam(r, "id")
 
-	result := h.service.GetUserById(context.Background(), id)
+	result := h.service.GetUserById(r.Context(), id)
 
 	if !result.Success {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -63,7 +62,7 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := h.service.CreateUser(context.Background(), user)
+	result := h.service.CreateUser(r.Context(), user)
 
 	if !result.Success {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -86,7 +85,7 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := h.service.UpdateUser(context.Background(), id, user)
+	result := h.service.UpdateUser(r.Context(), id, user)
 
 	if !result.Success {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -101,7 +100,7 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(contentType, applicationJson)
 	id := chi.URLParam(r, "id")
 
-	result := h.service.DeleteUser(context.Background(), id)
+	result := h.service.DeleteUser(r.Context(), id)
 
 	if !result.Success {
 		w.WriteHeader(http.StatusInternalServerError)

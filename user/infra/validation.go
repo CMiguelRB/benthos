@@ -7,13 +7,11 @@ import (
 	"unicode/utf8"
 )
 
-// Validador para User
 type UserValidator struct{}
 
 func (uv *UserValidator) ValidateUser(user *dom.User) []common.Error {
     var errors []common.Error
     
-    // Validar username
     if strings.TrimSpace(user.Username) == "" {
         errors = append(errors, common.Error{Message: "username required", Code: "EUSRU1"})
     } else if len(user.Username) < 6 {
@@ -24,7 +22,6 @@ func (uv *UserValidator) ValidateUser(user *dom.User) []common.Error {
         errors = append(errors, common.Error{Message: "username contains invalid characters", Code: "EUSRU4"})
     }
     
-    // Validar password
     if strings.TrimSpace(user.Password) == "" {
         errors = append(errors, common.Error{Message: "password required", Code: "EUSRP1"})
     } else if len(user.Password) < 6 {

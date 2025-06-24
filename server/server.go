@@ -10,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// New crea y configura el servidor
 func New(ctx *context.Context) *http.Server {
 
 	mux := chi.NewMux()
@@ -18,14 +17,12 @@ func New(ctx *context.Context) *http.Server {
 	userService := userApp.NewService(userRepo)
 	userRoutes := userInfra.NewUserRoutes(userService)
 
-	// Aquí usamos la interfaz RouteConfigurator para asegurarnos de que Configure está implementado
 	var configurators = []common.RouteConfigurator{
 		userRoutes,
 	}
 
-	// Configurar las rutas de los dominios
 	for _, configurator := range configurators {
-		configurator.Configure(mux, ctx)
+		configurator.Configure(mux)
 	}
 
 	return &http.Server{
