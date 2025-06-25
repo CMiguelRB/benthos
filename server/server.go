@@ -13,7 +13,7 @@ import (
 	"github.com/go-chi/httplog/v3"
 )
 
-const Version string = "version"
+var Version = "version"
 
 func New(ctx *context.Context) *http.Server {
 
