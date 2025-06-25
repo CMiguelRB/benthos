@@ -20,7 +20,33 @@ ENCRYPTION_KEY="32 bit HEX encryption key" ## Used for credentials encryption
 
 ## Database
 
-benthos uses PostreSQL database. Migrations are WIP. The database must be manually created and the name must be configured in the DB_NAME env variable.
+benthos uses PostreSQL database. The database must be manually created and the name must be configured in the DB_NAME env variable.
+
+#### Migrations
+Migrations are defined by file under `db/migrations/*`. Migration files are executed automatically at the start of the application. They must follow the following structure:
+```
+examplemigration.go
+
+package migrations
+
+import (
+	"benthos/db"
+	"context"
+)
+
+//init function is executed when instantiated
+func init() {
+	RegisterMigration("migrationName", up, down) // migrationName must be unique!! ie: 20250625102030migrationReason
+}
+
+func up(ctx *context.Context) (err error) {
+	//Database operations here
+}
+
+func down(ctx *context.Context) (err error) {
+  //Database operations rollback here
+}
+```
 
 ## Run
 
@@ -31,4 +57,10 @@ go run main.go
 ## Test
 ```
 go text ./...
+```
+
+## Build
+
+```
+go build
 ```
