@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Repo struct {
+type UserRepo struct {
 	getUsersQuery    string
 	getUserByIdQuery string
 	createUserQuery  string
@@ -20,8 +20,8 @@ type Repo struct {
 	deleteUserQuery  string
 }
 
-func NewRepo() *Repo {
-	return &Repo{
+func NewUserRepo() *UserRepo {
+	return &UserRepo{
 		getUsersQuery:    "SELECT * FROM users ORDER BY created_on ASC",
 		getUserByIdQuery: "SELECT * FROM users WHERE id = $1",
 		createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
@@ -30,7 +30,7 @@ func NewRepo() *Repo {
 	}
 }
 
-func (r *Repo) GetUsers(ctx context.Context) (users []dom.User, error error) {
+func (r *UserRepo) GetUsers(ctx context.Context) (users []dom.User, error error) {
 
 	rows, err := db.Pool.Query(ctx, r.getUsersQuery)
 	if err != nil {
@@ -53,7 +53,7 @@ func (r *Repo) GetUsers(ctx context.Context) (users []dom.User, error error) {
 	return users, err
 }
 
-func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, error error) {
+func (r *UserRepo) GetUserById(ctx context.Context, id string) (user []dom.User, error error) {
 
 	rows, err := db.Pool.Query(ctx, r.getUserByIdQuery, id)
 
@@ -77,7 +77,7 @@ func (r *Repo) GetUserById(ctx context.Context, id string) (user []dom.User, err
 	return user, err
 }
 
-func (r *Repo) CreateUser(ctx context.Context, user dom.User) (string, error) {
+func (r *UserRepo) CreateUser(ctx context.Context, user dom.User) (string, error) {
 
 	password, err := sec.Encrypt(user.Password)
 
@@ -96,7 +96,7 @@ func (r *Repo) CreateUser(ctx context.Context, user dom.User) (string, error) {
 	return id, err
 }
 
-func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64, error) {
+func (r *UserRepo) UpdateUser(ctx context.Context, id string, user dom.User) (int64, error) {
 
 	password, err := sec.Encrypt(user.Password)
 
@@ -116,7 +116,7 @@ func (r *Repo) UpdateUser(ctx context.Context, id string, user dom.User) (int64,
 	return res.RowsAffected(), err
 }
 
-func (r *Repo) DeleteUser(ctx context.Context, id string) (int64, error) {
+func (r *UserRepo) DeleteUser(ctx context.Context, id string) (int64, error) {
 
 	res, err := db.Pool.Exec(ctx, r.deleteUserQuery, id)
 

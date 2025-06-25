@@ -6,6 +6,7 @@ import (
 	"context"
 	"log"
 	"log/slog"
+	"os"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -13,10 +14,16 @@ import (
 
 func main() {
 
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     slog.LevelInfo,
+		AddSource: true,
+	}))
+	slog.SetDefault(logger)
+
 	var err error
 	err = godotenv.Load()
 	if err != nil {
-		slog.Info("Error loading .env file")
+		slog.Warn("Error loading .env file")
 	}
 
 	context := context.Background()

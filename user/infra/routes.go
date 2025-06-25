@@ -7,15 +7,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-var userPath string = "/user"
-var userIdPath = userPath + "/{id}"
+const (
+    userPath   = "/api/users"
+    userIdPath = userPath + "/{id}"
+)
 
 type UserRoutes struct {
 	handler *Handler
 	ctx     *context.Context
 }
 
-func NewUserRoutes(service *app.Service) *UserRoutes {
+func NewRoutes(service *app.UserService) *UserRoutes {
 	return &UserRoutes{
 		handler: NewHandler(service),
 	}

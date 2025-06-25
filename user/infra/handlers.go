@@ -11,14 +11,14 @@ import (
 )
 
 type Handler struct {
-	service   *app.Service
+	service   *app.UserService
 	validator *UserValidator
 }
 
 var contentType string = "Content-Type"
 var applicationJson string = "application/json"
 
-func NewHandler(service *app.Service) *Handler {
+func NewHandler(service *app.UserService) *Handler {
 	return &Handler{service: service}
 }
 
