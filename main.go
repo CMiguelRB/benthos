@@ -2,6 +2,7 @@ package main
 
 import (
 	"benthos/db"
+	"benthos/db/migrations"
 	"benthos/server"
 	"context"
 	"log"
@@ -32,6 +33,12 @@ func main() {
 
 	if err != nil {
 		log.Fatal(db.Connect(context))
+	}
+
+	err = migrations.RunMigrations(&context)
+
+	if err != nil {
+		slog.Warn(err.Error())
 	}
 
 	srv := server.New(&context)

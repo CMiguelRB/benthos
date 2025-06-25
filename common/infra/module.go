@@ -13,9 +13,9 @@ type ModuleInitializer interface {
 }
 
 type Module[Repo any, Service any, Routes RouteSetup] struct {
-	NewRepo    func() Repo
-	NewService func(Repo) Service
-	NewRoutes  func(Service) Routes
+    NewRepo    func() Repo
+    NewService func(Repo) Service  
+    NewRoutes  func(Service) Routes
 }
 
 func (m Module[Repo, Service, Routes]) Initialize() RouteSetup {
