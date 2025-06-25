@@ -13,14 +13,18 @@ import (
 	"github.com/go-chi/httplog/v3"
 )
 
+const Version string = "version"
+
 func New(ctx *context.Context) *http.Server {
+
+	os.Setenv("VERSION", Version)
 
 	mux := chi.NewMux()
 
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
 		slog.String("app", os.Getenv("NAME")),
-		slog.String("version", os.Getenv("VERSION")),
+		slog.String("version", Version),
 		slog.String("env", os.Getenv("ENV")),
 	)
 
