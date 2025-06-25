@@ -36,15 +36,20 @@ jobs:
       run: |
         GOOSARCH=${{matrix.goosarch}}
         GOOS=${GOOSARCH%/*}
+        VERSION=`git describe --tags HEAD`
+        EXTENSION='.sh'
+        if [ $GOOS = "windows" ]; then
+            EXTENSION='.exe'
+        fi
         GOARCH=${GOOSARCH#*/}
-        BINARY_NAME=${{github.repository}}-$GOOS-$GOARCH
+        BINARY_NAME=${{github.repository}}-$GOOS-$GOARCH-$VERSION.$EXTENSION
         echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
         echo "GOOS=$GOOS" >> $GITHUB_ENV
         echo "GOARCH=$GOARCH" >> $GITHUB_ENV
     - name: Build
       run: |
-        go build -o "$BINARY_NAME" -v
-    - name: Release with Notes
+        go build -o "$BINARY_NAME" -v -ldflags "-X github.com/CMiguelRB/benthos/server/server.Version=$VERSION"
+    - name: Release
       uses: softprops/action-gh-release@v1
       with:
         files: ${{env.BINARY_NAME}}
