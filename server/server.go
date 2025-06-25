@@ -4,21 +4,32 @@ import (
 	commonInfra "benthos/common/infra"
 	userInfra "benthos/user/infra"
 	"context"
-	"log/slog"
 	"net/http"
 	"time"
+	"log/slog"
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/httplog/v3"
 )
 
 func New(ctx *context.Context) *http.Server {
 
-	handler := slog.NewJSONHandler(os.Stdout, nil)
-
-    logger := slog.NewLogLogger(handler, slog.LevelError)
-
 	mux := chi.NewMux()
+
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
+		slog.String("app", os.Getenv("NAME")),
+		slog.String("version", os.Getenv("VERSION")),
+		slog.String("env", os.Getenv("ENV")),
+	)
+
+	mux.Use(httplog.RequestLogger(logger, &httplog.Options{
+		Level: slog.LevelInfo,
+
+		Schema: httplog.SchemaECS,
+		RecoverPanics: true,
+	}))
 	
 	modules := []commonInfra.ModuleInitializer{
         userInfra.NewModule(),
@@ -39,6 +50,5 @@ func New(ctx *context.Context) *http.Server {
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
-		ErrorLog: logger,
 	}
 }
