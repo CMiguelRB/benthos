@@ -1,7 +1,7 @@
 package infra
 
 import (
-	common "benthos/common/res"
+	commonDom "benthos/common/dom"
 	"benthos/user/app"
 	"benthos/user/dom"
 	"encoding/json"
@@ -111,20 +111,20 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-func validateBody(h *Handler, r *http.Request, user *dom.User) (result common.ErrorResponse) {
+func validateBody(h *Handler, r *http.Request, user *dom.User) (result commonDom.ErrorResponse) {
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {
-		result = common.ErrorResponse{
-			Error:   []common.Error{{Code: "EUSRG1", Message: "Invalid JSON"}},
+		result = commonDom.ErrorResponse{
+			Error:   []commonDom.Error{{Code: "EUSRG1", Message: "Invalid JSON"}},
 			Success: false,
 		}
 		return result
 	}
 
 	if validationErrors := h.validator.ValidateUser(user); len(validationErrors) > 0 {
-		result = common.ErrorResponse{
+		result = commonDom.ErrorResponse{
 			Error:   validationErrors,
 			Success: false,
 		}

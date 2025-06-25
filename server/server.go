@@ -1,7 +1,7 @@
 package server
 
 import (
-	"benthos/common/infra"
+	commonInfra "benthos/common/infra"
 	userInfra "benthos/user/infra"
 	"context"
 	"log/slog"
@@ -20,11 +20,11 @@ func New(ctx *context.Context) *http.Server {
 
 	mux := chi.NewMux()
 	
-	modules := []common.ModuleInitializer{
+	modules := []commonInfra.ModuleInitializer{
         userInfra.NewModule(),
     }
 
-	configurators := make([]common.RouteSetup, 0, len(modules))
+	configurators := make([]commonInfra.RouteSetup, 0, len(modules))
     for _, module := range modules {
         configurators = append(configurators, module.Initialize())
     }

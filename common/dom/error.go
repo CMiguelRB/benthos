@@ -1,4 +1,4 @@
-package common
+package dom
 
 type Error struct {
 	Message string

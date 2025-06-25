@@ -1,4 +1,4 @@
-package common
+package infra
 
 import (
 	"github.com/go-chi/chi/v5"

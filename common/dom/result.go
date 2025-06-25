@@ -1,4 +1,4 @@
-package common
+package dom
 
 type WResult struct {
 	Rows    *int64  `json:"rows,omitempty"`
