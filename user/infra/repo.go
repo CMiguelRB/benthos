@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"time"
 
-	sec "benthos/common/sec"
+	sec "benthos/shared/app/sec"
 	"benthos/db"
 	"benthos/user/dom"
 
@@ -22,10 +22,10 @@ type UserRepo struct {
 
 func NewUserRepo() *UserRepo {
 	return &UserRepo{
-		getUsersQuery:    "SELECT * FROM users ORDER BY created_on ASC",
+		getUsersQuery:    "SELECT * FROM users ORDER BY created_at ASC",
 		getUserByIdQuery: "SELECT * FROM users WHERE id = $1",
 		createUserQuery:  "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
-		updateUserQuery:  "UPDATE users SET username = $1, password = $2, updated_on = $3 WHERE id = $4",
+		updateUserQuery:  "UPDATE users SET username = $1, password = $2, updated_at = $3 WHERE id = $4",
 		deleteUserQuery:  "DELETE FROM users WHERE id = $1",
 	}
 }

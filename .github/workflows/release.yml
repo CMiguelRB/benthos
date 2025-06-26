@@ -5,7 +5,8 @@ name: Build benthos
 
 on:
   push:
-    tags: v*
+    tags: 
+      - v*
 
 jobs:
   test:

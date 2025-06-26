@@ -77,6 +77,7 @@ func checkSchemaVersion(ctx *context.Context) {
 	);`)
 
 	if err != nil {
+		db.Pool.Close()
 		log.Fatalf("Error initialization migrations")
 	}
 }

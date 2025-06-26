@@ -1,13 +1,14 @@
 package server
 
 import (
-	commonInfra "benthos/common/infra"
-	userInfra "benthos/user/infra"
+	shared "benthos/shared/infra"
+	user "benthos/user/infra"
 	"context"
-	"net/http"
-	"time"
+	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httplog/v3"
@@ -35,11 +36,12 @@ func New(ctx *context.Context) *http.Server {
 		RecoverPanics: true,
 	}))
 	
-	modules := []commonInfra.ModuleInitializer{
-        userInfra.NewModule(),
+	slog.Info("Loading domain modules...")
+	modules := []shared.ModuleInitializer{
+        user.NewModule(),
     }
 
-	configurators := make([]commonInfra.RouteSetup, 0, len(modules))
+	configurators := make([]shared.RouteSetup, 0, len(modules))
     for _, module := range modules {
         configurators = append(configurators, module.Initialize())
     }
@@ -48,8 +50,12 @@ func New(ctx *context.Context) *http.Server {
         configurator.Configure(mux)
     }
 
+	if os.Getenv("PORT") == "" {
+		os.Setenv("PORT", "3120")
+	}
+
 	return &http.Server{
-		Addr:         "127.0.0.1:3120",
+		Addr:         fmt.Sprintf("127.0.0.1:%s", os.Getenv("PORT")),
 		Handler:      mux,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,

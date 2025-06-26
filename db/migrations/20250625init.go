@@ -15,8 +15,8 @@ func up(ctx *context.Context) (err error) {
 		id uuid DEFAULT uuid_generate_v4() NOT NULL,
 		username varchar NOT NULL,
 		"password" varchar NOT NULL,
-		created_on timestamptz DEFAULT now() NOT NULL,
-		updated_on timestamptz NULL,
+		created_at timestamptz DEFAULT now() NOT NULL,
+		updated_at timestamptz NULL,
 		last_access timestamptz NULL,
 		CONSTRAINT users_pk PRIMARY KEY (id),
 		CONSTRAINT users_username_uq UNIQUE (username)

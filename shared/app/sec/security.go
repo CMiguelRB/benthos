@@ -1,4 +1,4 @@
-package common
+package sec
 
 import (
 	"bytes"
