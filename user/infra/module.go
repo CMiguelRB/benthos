@@ -1,18 +1,26 @@
 package infra
 
 import (
-	shared "benthos/shared/infra"
-	"benthos/user/app"
+	app "benthos/user/app"
 	"log/slog"
 )
 
-func NewModule() shared.Module[*UserRepo, *app.UserService, *UserRoutes] {
-	slog.Info("Loading User module...")
-	return shared.Module[*UserRepo, *app.UserService, *UserRoutes]{
-		NewRepo: NewUserRepo,
-		NewService: func(r *UserRepo) *app.UserService {
-			return app.NewUserService(r)
-		},
-		NewRoutes: NewRoutes,
+type Module struct {
+	Repo    *UserRepo
+	Service *app.UserService
+	Routes  *UserRoutes
+}
+
+func NewModule() Module {
+	slog.Info("Loading Users module...")
+	
+	repo := NewUserRepo()
+	service := app.NewUserService(repo)
+	routes := NewUserRoutes(service)
+
+	return Module{
+		Repo:    repo,
+		Service: service,
+		Routes:  routes,
 	}
 }

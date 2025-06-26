@@ -1,7 +1,6 @@
 package server
 
 import (
-	shared "benthos/shared/infra"
 	user "benthos/user/infra"
 	"context"
 	"fmt"
@@ -37,18 +36,8 @@ func New(ctx *context.Context) *http.Server {
 	}))
 	
 	slog.Info("Loading domain modules...")
-	modules := []shared.ModuleInitializer{
-        user.NewModule(),
-    }
-
-	configurators := make([]shared.RouteSetup, 0, len(modules))
-    for _, module := range modules {
-        configurators = append(configurators, module.Initialize())
-    }
+    user.NewModule().Routes.Configure(mux)
     
-    for _, configurator := range configurators {
-        configurator.Configure(mux)
-    }
 
 	if os.Getenv("PORT") == "" {
 		os.Setenv("PORT", "3120")

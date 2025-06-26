@@ -2,7 +2,6 @@ package infra
 
 import (
 	"benthos/user/app"
-	"context"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -14,10 +13,9 @@ const (
 
 type UserRoutes struct {
 	handler *Handler
-	ctx     *context.Context
 }
 
-func NewRoutes(service *app.UserService) *UserRoutes {
+func NewUserRoutes(service *app.UserService) *UserRoutes {
 	return &UserRoutes{
 		handler: NewHandler(service),
 	}
