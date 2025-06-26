@@ -139,5 +139,5 @@ go text ./...
 ## Build
 
 ```
-go build
+go build -v -ldflags "-X benthos/server.Version=v0.0.0"
 ```
