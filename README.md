@@ -12,7 +12,7 @@ Environment variables must either exists in the os environment variables or in a
 
 ENV=DEV
 NAME=benthos
-VERSION=0.0.1   ## Used only for local execution, the Github Action sets the app version based on the pushed tag.
+VERSION=0.0.1   ## Only for local execution, the GH Action sets the version based on the pushed tag.
 DB_USER="TEST"
 DB_PASSWORD="TEST"
 DB_HOSTNAME="localhost"
