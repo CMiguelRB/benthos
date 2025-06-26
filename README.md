@@ -133,7 +133,7 @@ go run main.go
 
 ## Test
 ```
-go text ./...
+go test ./...
 ```
 
 ## Build
