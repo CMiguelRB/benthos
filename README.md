@@ -79,20 +79,30 @@ type DomnameService struct {
 	repo userDom.DomnameRepo
 }
 
-func NewDomnamerService(repo DomnameRepo) *DomnameService {
+func NewDomnameService(repo DomnameRepo) *DomnameService {
 	return &DomnameService{repo: repo}
 }
 ```
 ```
 module.go
 
-func NewModule() common.Module[*DomnameRepo, *app.DomnameService, *DomnameRoutes] { // Check common Module abstract implementation
-	return common.Module[*DomnameRepo, *app.DomnameService, *DomnameRoutes]{
-		NewRepo: NewDomnameRepo,
-		NewService: func(r *DomnameRepo) *app.DomnameService {
-			return app.NewDomnameService(r)
-		},
-		NewRoutes: NewRoutes,
+type Module struct {
+	Repo    *DomnameRepo
+	Service *app.DomnameService
+	Routes  *DomnameRoutes
+}
+
+func NewModule() Module {
+	slog.Info("Loading Domname module...")
+	
+	repo := NewDomnameRepo()
+	service := app.NewDomnameService(repo)
+	routes := NewDomnameRoutes(service)
+
+	return Module{
+		Repo:    repo,
+		Service: service,
+		Routes:  routes,
 	}
 }
 ```
@@ -102,7 +112,6 @@ routes.go
 
 type Routes struct {
 	handler *Handler
-	ctx     *context.Context
 }
 
 func NewRoutes(service *app.DomnameService) *DomnameRoutes {
@@ -119,10 +128,9 @@ func (r *DomnameRoutes) Configure(mux *chi.Mux) {
 Once the new module is set up, the only required step is to add it to he server modules:
 
 ```
-modules := []commonInfra.ModuleInitializer{
-	existingDomnameInfra.NewModule(), // -> Existing module
-	domnameInfra.NewModule(),         // -> your new module
-}
+slog.Info("Loading domain modules...")
+domname.NewModule().Routes.Configure(mux) // -> Existing module
+newmodule.NewModule.Routes.Configure(mux) // -> your new module
 ```
 
 ## Run
@@ -139,5 +147,7 @@ go test ./...
 ## Build
 
 ```
-go build -v -ldflags "-X benthos/server.Version=v0.0.0" // v0.0.0 -> your app version. The GH action does this for you at build runtime based on the pushed tag.
+go build -v -ldflags "-X benthos/server.Version=v0.0.0"
+
+v0.0.0 -> your app version. The GH action does this for you at build stage based on the pushed tag.
 ```
