@@ -10,6 +10,9 @@ Environment variables must either exists in the os environment variables or in a
 ```
 .env
 
+ENV=DEV
+NAME=benthos
+VERSION=0.0.1   ## Only for local execution, the GH Action sets the version based on the pushed tag.
 DB_USER="TEST"
 DB_PASSWORD="TEST"
 DB_HOSTNAME="localhost"
@@ -130,11 +133,11 @@ go run main.go
 
 ## Test
 ```
-go text ./...
+go test ./...
 ```
 
 ## Build
 
 ```
-go build
+go build -v -ldflags "-X benthos/server.Version=v0.0.0" // v0.0.0 -> your app version. The GH action does this for you at build runtime based on the pushed tag.
 ```
