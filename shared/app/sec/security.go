@@ -30,7 +30,11 @@ func Encrypt(input string) (output string, err error) {
 	padText := bytes.Repeat([]byte{byte(padding)}, padding)
 	inputBytes := append([]byte(input), padText...)
 
-	block, _ := aes.NewCipher(key)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return "", err
+	}
+	
 	cipherText := make([]byte, len(inputBytes))
 	mode := cipher.NewCBCEncrypter(block, iv)
 	mode.CryptBlocks(cipherText, inputBytes)
