@@ -44,7 +44,7 @@ func New(ctx *context.Context) *http.Server {
 	}
 
 	return &http.Server{
-		Addr:         fmt.Sprintf("127.0.0.1:%s", os.Getenv("PORT")),
+		Addr:         fmt.Sprintf("%s:%s", os.Getenv("HOSTNAME"), os.Getenv("PORT")),
 		Handler:      mux,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
