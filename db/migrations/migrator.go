@@ -49,24 +49,14 @@ func RunMigrations(ctx *context.Context) (error error) {
 		}
 
 		slog.Info("Running migration: " + migration)
-		migrationSuccess := false
 		if error = migrations[migration].Up(ctx); error != nil {
 			slog.Warn("Failed migration: " + migration)
 			if error = migrations[migration].Down(ctx); error != nil {
 				slog.Warn("Failed migration rollback: " + migration)
 			}
+			updateSchemaVersion(ctx, migration, exists, false)
 		} else {
-			migrationSuccess = true
-
-			if exists == true {
-				_, error = db.Pool.Exec(*ctx, `UPDATE schema_version SET success=$1`, migrationSuccess)
-			} else {
-				_, error = db.Pool.Exec(*ctx, `INSERT INTO schema_version (name, success) VALUES ($1, $2)`, migration, migrationSuccess)
-			}
-
-			if error != nil {
-				slog.Warn("Failed schema_version update: " + migration)
-			}
+			updateSchemaVersion(ctx, migration, exists, true)
 		}
 	}
 
@@ -108,9 +98,23 @@ func checkMigration(ctx *context.Context, migration string) (exists bool, succes
 		if rNum > 0 {
 			exists = true
 		}
-		if schema[0].Success {
+		if rNum > 0 && schema[0].Success {
 			success = true
 		}
 	}
 	return exists, success
+}
+
+func updateSchemaVersion(ctx *context.Context, migration string, exists bool, migrationSuccess bool) {
+
+	var error error
+	if exists == true {
+		_, error = db.Pool.Exec(*ctx, `UPDATE schema_version SET success=$1`, migrationSuccess)
+	} else {
+		_, error = db.Pool.Exec(*ctx, `INSERT INTO schema_version (name, success) VALUES ($1, $2)`, migration, migrationSuccess)
+	}
+
+	if error != nil {
+		slog.Warn("Failed schema_version update: " + migration)
+	}
 }
