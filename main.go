@@ -8,8 +8,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
-	"strings"
-
+	
 	"github.com/joho/godotenv"
 )
 
@@ -50,7 +49,7 @@ func main() {
 	slog.Info("Migrations OK!")
 
 	srv := server.New(&context)
-	slog.Info("Server running at port " + strings.Split(srv.Addr, ":")[1] + "!")
+	slog.Info("Server running at " + srv.Addr + "!")
 	err = srv.ListenAndServe()
 	if err != nil {
 		db.Pool.Close();

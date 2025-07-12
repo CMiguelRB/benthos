@@ -40,7 +40,7 @@ func New(ctx *context.Context) *http.Server {
     
 
 	if os.Getenv("PORT") == "" {
-		os.Setenv("PORT", "3120")
+		os.Setenv("PORT", "3800")
 	}
 
 	return &http.Server{
