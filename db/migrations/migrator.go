@@ -42,24 +42,31 @@ func RunMigrations(ctx *context.Context) (error error) {
 
 	for _, migration := range keys {
 
-		if checkMigration(ctx, migration) == true {
+		exists, success := checkMigration(ctx, migration)
+
+		if exists == true && success == true {
 			continue
 		}
 
 		slog.Info("Running migration: " + migration)
-		success := false
+		migrationSuccess := false
 		if error = migrations[migration].Up(ctx); error != nil {
 			slog.Warn("Failed migration: " + migration)
 			if error = migrations[migration].Down(ctx); error != nil {
 				slog.Warn("Failed migration rollback: " + migration)
 			}
 		} else {
-			success = true
-		}
+			migrationSuccess = true
 
-		_, error = db.Pool.Exec(*ctx, `INSERT INTO schema_version (name, success) VALUES ($1, $2)`, migration, success)
-		if error != nil {
-			slog.Warn("Failed schema_version update: " + migration)
+			if exists == true {
+				_, error = db.Pool.Exec(*ctx, `UPDATE schema_version SET success=$1`, migrationSuccess)
+			} else {
+				_, error = db.Pool.Exec(*ctx, `INSERT INTO schema_version (name, success) VALUES ($1, $2)`, migration, migrationSuccess)
+			}
+
+			if error != nil {
+				slog.Warn("Failed schema_version update: " + migration)
+			}
 		}
 	}
 
@@ -82,23 +89,28 @@ func checkSchemaVersion(ctx *context.Context) {
 	}
 }
 
-func checkMigration(ctx *context.Context, migration string) (bool bool) {
+func checkMigration(ctx *context.Context, migration string) (exists bool, success bool) {
 
-	result := false
+	exists = false
+	success = false
 
 	rows, error := db.Pool.Query(*ctx, `SELECT * FROM schema_version WHERE name = $1`, migration)
 	if error != nil {
 		slog.Error(error.Error())
-		return result
+		return exists, success
 	}
 	defer rows.Close()
 	schema, error := pgx.CollectRows(rows, pgx.RowToStructByName[SchemaVersion])
 	if error != nil {
 		slog.Error(error.Error())
 	} else {
-		if len(schema) > 0 && schema[0].Success == true {
-			result = true
+		rNum := len(schema)
+		if rNum > 0 {
+			exists = true
+		}
+		if schema[0].Success {
+			success = true
 		}
 	}
-	return result
+	return exists, success
 }
