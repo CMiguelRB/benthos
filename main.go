@@ -1,6 +1,7 @@
 package main
 
 import (
+	"benthos/config"
 	"benthos/db"
 	"benthos/db/migrations"
 	"benthos/server"
@@ -8,9 +9,11 @@ import (
 	"log"
 	"log/slog"
 	"os"
-	
+
 	"github.com/joho/godotenv"
 )
+
+var Settings config.Config
 
 func main() {
 
@@ -29,9 +32,13 @@ func main() {
 	}
 	if os.Getenv("ENCRYPTION_KEY") == "" || os.Getenv("DB_USER") == "" {
 		log.Fatal("Server inizialization error: no environment variables found!")
-	}else{
+	} else {
 		slog.Info("Environment variables loaded OK!")
 	}
+
+	slog.Info("Loading service configuration...")
+	config.InitConfiguration()
+	slog.Info("Service configuration loaded OK!")
 
 	slog.Info("Connecting to the database...")
 	context := context.Background()
@@ -50,9 +57,10 @@ func main() {
 
 	srv := server.New(&context)
 	slog.Info("Server running at " + srv.Addr + "!")
+	slog.Info(config.Settings.App.Name + " " + config.Settings.App.Version + " ready to go!")
 	err = srv.ListenAndServe()
 	if err != nil {
-		db.Pool.Close();
+		db.Pool.Close()
 		log.Fatal(err)
 	}
 }

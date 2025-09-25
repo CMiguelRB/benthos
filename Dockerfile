@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine
+FROM golang:1.25.1-alpine
 
 WORKDIR /app
 
@@ -9,8 +9,6 @@ RUN curl -s https://api.github.com/repos/cmiguelrb/benthos/releases/latest \
   | xargs curl -L -o benthos && chmod +x benthos
 
 ENV ENV=xxx
-ENV NAME=xxx
-ENV VERSION=xxx
 ## server
 ENV PORT=xxx
 ## database
