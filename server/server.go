@@ -51,6 +51,10 @@ func New(ctx *context.Context) *http.Server {
 		os.Setenv("PORT", "3800")
 	}
 
+	if os.Getenv("HOSTNAME") == "" {
+		os.Setenv("HOSTNAME", "0.0.0.0")
+	}
+
 	return &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", os.Getenv("HOSTNAME"), os.Getenv("PORT")),
 		Handler:      mux,
