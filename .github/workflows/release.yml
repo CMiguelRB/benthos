@@ -54,7 +54,7 @@ jobs:
       run: |
         echo $BINARY_NAME
         echo $VERSION
-        go build -o "$BINARY_NAME" -v -ldflags "-X benthos/server.Version=$VERSION"
+        go build -o "$BINARY_NAME" -v -ldflags "-X benthos/config.Version=$VERSION"
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
