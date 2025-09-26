@@ -11,14 +11,106 @@ Environment variables must either exists in the os environment variables or in a
 .env
 
 ENV=DEV
-NAME=benthos
-VERSION=0.0.1   ## Only for local execution, the GH Action sets the version based on the pushed tag.
 DB_USER="TEST"
 DB_PASSWORD="TEST"
 DB_HOSTNAME="localhost"
 DB_PORT="5432"
 DB_NAME="TEST"
 ENCRYPTION_KEY="32 bit HEX encryption key" ## Used for credentials encryption
+```
+
+## Configuration
+
+Service configuration can be found inside the `config` package. A `Config` struct is defined and globally exporeted as `Settings`. The values are set in the `InitConfiguration` method. This way of setting the global service configuration has two goals: to avoid depending on external files for variables that rarely change, other than env variables, and to provide a structured way to access these variables from the global context.
+
+```
+config/config.go
+
+package config
+
+import (
+	"os"
+	"time"
+	"sync"
+)
+
+type Config struct {
+	App    App
+	Server Server
+	...
+}
+
+type App struct {
+	Name    string
+	Version string
+	...
+}
+
+type Server struct {
+	ReadTimeoutMs  time.Duration
+	WriteTimeoutMs time.Duration
+	IdleTimeoutMs  time.Duration
+	RateLimit      RateLimit
+	...
+}
+
+type RateLimit struct {
+	Requests int
+	PeriodMs int
+	...
+}
+
+var (
+	once     sync.Once
+	Settings Config
+)
+
+//This global variable is updated with the provided git tag at release.yml Github Action runtime
+var Version = "version"
+
+func InitConfiguration() {
+	once.Do(func() {
+		//App
+		Settings.App.Name = "benthos"
+		if os.Getenv("ENV") != "DEV" {
+			Settings.App.Version = Version
+		} else {
+			Settings.App.Version = "v0.0.3"
+		}
+		...
+		//Server
+		Settings.Server.ReadTimeoutMs = 15000
+		Settings.Server.WriteTimeoutMs = 15000
+		Settings.Server.IdleTimeoutMs = 60000
+		...
+		//Server RateLimit
+		Settings.Server.RateLimit.Requests = 10
+		Settings.Server.RateLimit.PeriodMs = 10000
+		...
+	})
+}
+```
+
+And to access the configuration from other packages:
+
+```
+server/server.go
+
+package server
+
+import (
+	"benthos/config"
+	"fmt"
+	...
+)
+
+func New(ctx *context.Context) *http.Server {
+	...
+	fmt.Println("App version: " + config.Settings.App.Version)
+	//Output: App version: v0.0.3
+	...
+}
+
 ```
 
 ## Database
