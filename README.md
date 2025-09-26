@@ -241,7 +241,7 @@ go test ./...
 ## Build
 
 ```
-go build -v -ldflags "-X benthos/server.Version=v0.0.0"
+go build -v -ldflags "-X benthos/config.Version=v0.0.0"
 
 v0.0.0 -> your app version. The GH action does this for you at build stage based on the pushed tag.
 ```
