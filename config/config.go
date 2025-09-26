@@ -1,34 +1,31 @@
 package config
 
 import (
-	"encoding/json"
-	"io"
-	"log"
 	"os"
 	"sync"
 	"time"
 )
 
 type Config struct {
-	App    App    `json:"app"`
-	Server Server `json:"server"`
+	App    App
+	Server Server
 }
 
 type App struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
+	Name    string
+	Version string
 }
 
 type Server struct {
-	RateLimit RateLimit `json:"rateLimit"`
-	ReadTimeoutMs time.Duration `json:"readTimeoutMs"`
-	WriteTimeoutMs time.Duration `json:"writeTimeoutMs"`
-	IdleTimeoutMs time.Duration `json:"idleTimeoutMs"`
+	RateLimit      RateLimit
+	ReadTimeoutMs  time.Duration
+	WriteTimeoutMs time.Duration
+	IdleTimeoutMs  time.Duration
 }
 
 type RateLimit struct {
-	Requests int `json:"requests"`
-	PeriodMs   int `json:"periodMs"`
+	Requests int
+	PeriodMs int
 }
 
 var (
@@ -36,21 +33,24 @@ var (
 	Settings Config
 )
 
+//This global variable is updated with the provided git tag at release.yml Github Action runtime
+var Version = "version"
+
 func InitConfiguration() {
 	once.Do(func() {
-		confFile, err := os.Open("config.json")
-		if err != nil {
-			log.Fatal("Error opening config.json file!")
+		//App
+		Settings.App.Name = "benthos"
+		if os.Getenv("ENV") != "DEV" {
+			Settings.App.Version = Version
+		} else {
+			Settings.App.Version = "v0.0.3"
 		}
-		defer confFile.Close()
-		confBytes, err := io.ReadAll(confFile)
-		if err != nil {
-			log.Fatal("Error reading config.json file!")
-		}
-
-		err = json.Unmarshal(confBytes, &Settings)
-		if err != nil {
-			log.Fatal("Error parsing config.json file!")
-		}
+		//Server
+		Settings.Server.ReadTimeoutMs = 15000
+		Settings.Server.WriteTimeoutMs = 15000
+		Settings.Server.IdleTimeoutMs = 60000
+		//Server RateLimit
+		Settings.Server.RateLimit.Requests = 10
+		Settings.Server.RateLimit.PeriodMs = 10000
 	})
 }
