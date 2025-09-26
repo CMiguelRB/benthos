@@ -15,13 +15,7 @@ import (
 	"github.com/go-chi/httprate"
 )
 
-var Version = "version"
-
 func New(ctx *context.Context) *http.Server {
-
-	if os.Getenv("ENV") != "DEV" {
-		config.Settings.App.Version = Version
-	}
 
 	mux := chi.NewMux()
 
