@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -97,7 +98,7 @@ func loadSecret(name string) (string, error) {
 	secretPath := filepath.Join("/run/secrets", name)
 
 	if data, err := os.ReadFile(secretPath); err == nil {
-		return string(data), nil
+		return strings.TrimSpace(string(data)), nil
 	}
 
 	return "", os.ErrNotExist
