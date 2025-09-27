@@ -81,7 +81,6 @@ func InitConfiguration() {
 			if err != nil {
 				log.Fatal("DB Password secret not found")
 			}
-			log.Println(dbPassword)
 			Settings.Database.Password = dbPassword;
 			//Security
 			encryptionKey, err := loadSecret("benthos_encryption_key")
