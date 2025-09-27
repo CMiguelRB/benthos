@@ -60,6 +60,16 @@ type RateLimit struct {
 	...
 }
 
+type Database struct {
+	Hostname string
+	...
+}
+
+type Security struct {
+	EncryptionKey string
+	...
+}
+
 var (
 	once     sync.Once
 	Settings Config
@@ -72,11 +82,7 @@ func InitConfiguration() {
 	once.Do(func() {
 		//App
 		Settings.App.Name = "benthos"
-		if os.Getenv("ENV") != "DEV" {
-			Settings.App.Version = Version
-		} else {
-			Settings.App.Version = "v0.0.3"
-		}
+		Settings.App.Version = "v0.0.4"
 		...
 		//Server
 		Settings.Server.ReadTimeoutMs = 15000
@@ -87,11 +93,52 @@ func InitConfiguration() {
 		Settings.Server.RateLimit.Requests = 10
 		Settings.Server.RateLimit.PeriodMs = 10000
 		...
+		//DB
+		Settings.Database.Hostname = os.Getenv("DB_HOSTNAME")
+		...
+		//Security
+		Settings.Security.EncryptionKey = os.Getenv("ENCRYPTION_KEY")
+		...
 	})
 }
 ```
 
-And to access the configuration from other packages:
+Also, in order to get secrets, they can be either stored in a .env file, but for a production environment they may have to be loaded from the secrets folder (Docker):
+
+```
+...
+func InitConfiguration() {
+	...
+	if os.Getenv("ENV") == "PROD" {
+		Settings.App.Version = Version
+		...
+		//DB
+		dbPassword, err := loadSecret("db_password")
+		if err != nil {
+			log.Fatal("DB Password secret not found")
+		}
+		Settings.Database.Password = dbPassword;
+		//Security
+		encryptionKey, err := loadSecret("benthos_encryption_key")
+		if err != nil {
+			log.Fatal("Encryption key secret not found")
+		}
+		Settings.Security.EncryptionKey = encryptionKey
+	}
+}
+
+func loadSecret(name string) (string, error) {
+	secretPath := filepath.Join("/run/secrets", name) //Load the secret from the default path Docker loads the secrets configured in the docker-compose.yml file.
+
+	if data, err := os.ReadFile(secretPath); err == nil {
+		return strings.TrimSpace(string(data)), nil
+	}
+
+	return "", os.ErrNotExist
+}
+```
+
+To access the configuration from other packages:
 
 ```
 server/server.go
