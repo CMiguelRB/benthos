@@ -26,6 +26,8 @@ func Connect(context context.Context) error {
 			config.Settings.Database.Port,
 			config.Settings.Database.Name)
 
+		fmt.Println(connectionString)
+
 		Pool, err = pgxpool.New(context, connectionString)
 		if err != nil {
 			slog.Error("Unable to connect to the database")
