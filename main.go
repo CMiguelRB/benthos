@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		slog.Warn("Error loading .env file")
 	}
-	if os.Getenv("ENCRYPTION_KEY") == "" || os.Getenv("DB_USER") == "" {
+	if os.Getenv("DB_USERNAME") == "" {
 		log.Fatal("Server inizialization error: no environment variables found!")
 	} else {
 		slog.Info("Environment variables loaded OK!")

@@ -1,21 +1,20 @@
 package sec
 
 import (
+	"benthos/config"
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"os"
 )
 
 func Encrypt(input string) (output string, err error) {
 
-	key, err := hex.DecodeString(os.Getenv("ENCRYPTION_KEY"))
+	key, err := hex.DecodeString(config.Settings.Security.EncryptionKey)
 
 	if err != nil {
-		err = errors.New("Encryption key not found")
 		return "", err
 	}
 
@@ -44,10 +43,9 @@ func Encrypt(input string) (output string, err error) {
 
 func Decrypt(input string) (output string, err error) {
 
-	key, err := hex.DecodeString(os.Getenv("ENCRYPTION_KEY"))
+	key, err := hex.DecodeString(config.Settings.Security.EncryptionKey)
 
 	if err != nil {
-		err = errors.New("Encryption key not found")
 		return "", err
 	}
 

@@ -1,7 +1,7 @@
 package sec
 
 import (
-	"os"
+	"benthos/config"
 	"testing"
 )
 
@@ -10,7 +10,7 @@ var testResult string = "2e800799b9866f2f2509af45ed30a3665b0ab9d4309354ec97967f2
 
 func TestEncrypt(t *testing.T) {
 
-	os.Setenv("ENCRYPTION_KEY", "61A7FA981C8E6FFCA386A796C1C73B17")
+	config.Settings.Security.EncryptionKey = "61A7FA981C8E6FFCA386A796C1C73B17"
 
 	_, err := Encrypt(testString)
 
@@ -22,7 +22,7 @@ func TestEncrypt(t *testing.T) {
 
 func TestDecrypt(t *testing.T) {
 
-	os.Setenv("ENCRYPTION_KEY", "61A7FA981C8E6FFCA386A796C1C73B17")
+	config.Settings.Security.EncryptionKey = "61A7FA981C8E6FFCA386A796C1C73B17"
 
 	decrypted, err := Decrypt(testResult)
 

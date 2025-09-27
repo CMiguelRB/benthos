@@ -34,7 +34,7 @@ func New(ctx *context.Context) *http.Server {
 
 	mux.Use(httprate.Limit(
 		config.Settings.Server.RateLimit.Requests,
-		time.Duration(config.Settings.Server.RateLimit.PeriodMs),
+		config.Settings.Server.RateLimit.Period*time.Millisecond,
 		httprate.WithKeyFuncs(httprate.KeyByIP, httprate.KeyByEndpoint),
 	))
 
@@ -52,8 +52,8 @@ func New(ctx *context.Context) *http.Server {
 	return &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", os.Getenv("HOSTNAME"), os.Getenv("PORT")),
 		Handler:      mux,
-		ReadTimeout:  config.Settings.Server.ReadTimeoutMs*time.Millisecond,
-		WriteTimeout: config.Settings.Server.WriteTimeoutMs*time.Millisecond,
-		IdleTimeout:  config.Settings.Server.IdleTimeoutMs*time.Millisecond,
+		ReadTimeout:  config.Settings.Server.ReadTimeout*time.Millisecond,
+		WriteTimeout: config.Settings.Server.WriteTimeout*time.Millisecond,
+		IdleTimeout:  config.Settings.Server.IdleTimeout*time.Millisecond,
 	}
 }
