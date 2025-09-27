@@ -25,6 +25,7 @@ func Connect(context context.Context) error {
 			config.Settings.Database.Hostname,
 			config.Settings.Database.Port,
 			config.Settings.Database.Name)
+		fmt.Println(connectionString)
 
 		Pool, err = pgxpool.New(context, connectionString)
 		if err != nil {
