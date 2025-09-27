@@ -88,8 +88,7 @@ func InitConfiguration() {
 			if err != nil {
 				log.Fatal("Encryption key secret not found")
 			}
-			Settings.Database.Password = encryptionKey;
-			Settings.Security.EncryptionKey = os.Getenv("ENCRYPTION_KEY")
+			Settings.Security.EncryptionKey = encryptionKey
 		}
 
 	})
