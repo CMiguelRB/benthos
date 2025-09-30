@@ -17,12 +17,23 @@ var Settings config.Config
 
 func main() {
 
+	appName := `
+						88                                            88                
+						88                                     ,d     88                                   
+						88                                     88     88                                   
+						88,dPPYba,    ,adPPYba,  8b,dPPYba,  MM88MMM  88,dPPYba,    ,adPPYba,   ,adPPYba,  
+						88P'    "8a  a8P_____88  88P'   '"8a   88     88P'    "8a  a8"     "8a  I8[    ""  
+						88       d8  8PP"""""""  88       88   88     88       88  8b       d8   '"Y8ba,   
+						88b,   ,a8"  "8b,   ,aa  88       88   88,    88       88  "8a,   ,a8"  aa    ]8I  
+						8Y"Ybbd8"'    '"Ybbd8"'  88       88   "Y888  88       88    "YbbdP"'   "YbbdP"'  `
+
+	log.Println(appName)
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level:     slog.LevelInfo,
 		AddSource: true,
 	}))
 	slog.SetDefault(logger)
-
 	slog.Info("Starting benthos server.")
 	slog.Info("Loading environment variables...")
 	var err error
