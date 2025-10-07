@@ -14,42 +14,42 @@ func NewUserService(repo users.UserRepo) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) GetUsers(ctx context.Context) (result shared.QResult[users.User]) {
+func (s *UserService) GetUsers(ctx context.Context) (result shared.QueryResult[users.User]) {
 
 	users, err := s.repo.GetUsers(ctx)
 
-	return createQResult(users, err)
+	return createQueryResult(users, err)
 }
 
-func (s *UserService) GetUserById(ctx context.Context, id string) (result shared.QResult[users.User]) {
+func (s *UserService) GetUserById(ctx context.Context, id string) (result shared.QueryResult[users.User]) {
 
 	user, err := s.repo.GetUserById(ctx, id)
 
-	return createQResult(user, err)
+	return createQueryResult(user, err)
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user users.User) (result shared.WResult) {
+func (s *UserService) CreateUser(ctx context.Context, user users.User) (result shared.PersistenceResult) {
 
 	id, err := s.repo.CreateUser(ctx, user)
 
-	return createWResult(&id, nil, err)
+	return createPersistenceResult(&id, nil, err)
 }
 
-func (s *UserService) UpdateUser(ctx context.Context, id string, user users.User) (result shared.WResult) {
+func (s *UserService) UpdateUser(ctx context.Context, id string, user users.User) (result shared.PersistenceResult) {
 	rows, err := s.repo.UpdateUser(ctx, id, user)
 
-	return createWResult(nil, &rows, err)
+	return createPersistenceResult(nil, &rows, err)
 }
 
-func (s *UserService) DeleteUser(ctx context.Context, id string) (result shared.WResult) {
+func (s *UserService) DeleteUser(ctx context.Context, id string) (result shared.PersistenceResult) {
 	rows, err := s.repo.DeleteUser(ctx, id)
 
-	return createWResult(nil, &rows, err)
+	return createPersistenceResult(nil, &rows, err)
 }
 
-func createQResult(user []users.User, err error) (result shared.QResult[users.User]) {
+func createQueryResult(user []users.User, err error) (result shared.QueryResult[users.User]) {
 
-	result = shared.QResult[users.User]{
+	result = shared.QueryResult[users.User]{
 		Success: false,
 	}
 
@@ -67,9 +67,9 @@ func createQResult(user []users.User, err error) (result shared.QResult[users.Us
 	return result
 }
 
-func createWResult(id *string, rows *int64, err error) (result shared.WResult) {
+func createPersistenceResult(id *string, rows *int64, err error) (result shared.PersistenceResult) {
 
-	result = shared.WResult{
+	result = shared.PersistenceResult{
 		Success: false,
 	}
 
