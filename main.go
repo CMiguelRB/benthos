@@ -18,7 +18,7 @@ var Settings config.Config
 func main() {
 
 	appName := `
-						88                                            88                
+						88                                            88                                   
 						88                                     ,d     88                                   
 						88                                     88     88                                   
 						88,dPPYba,    ,adPPYba,  8b,dPPYba,  MM88MMM  88,dPPYba,    ,adPPYba,   ,adPPYba,  
