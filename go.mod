@@ -6,7 +6,7 @@ require github.com/go-chi/chi/v5 v5.2.3
 
 require github.com/go-chi/httprate v0.15.0
 
-require github.com/jackc/pgx/v5 v5.7.6
+require github.com/jackc/pgx/v5 v5.8.0
 
 require github.com/joho/godotenv v1.5.1
 
@@ -18,7 +18,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
-	golang.org/x/crypto v0.43.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
