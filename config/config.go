@@ -57,7 +57,7 @@ func InitConfiguration() {
 	once.Do(func() {
 		//App
 		Settings.App.Name = "benthos"
-		Settings.App.Version = "v0.0.3"
+		Settings.App.Version = "v0.0.5"
 		//Server
 		Settings.Server.ReadTimeout = 15000
 		Settings.Server.WriteTimeout = 15000
