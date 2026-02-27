@@ -32,6 +32,7 @@ func RegisterMigration(migration string, up, down func(*context.Context) error) 
 func RunMigrations(ctx *context.Context) (error error) {
 	migrations := migrationRegistry
 
+	createPgcryptoExtension(ctx)
 	checkSchemaVersion(ctx)
 
 	var keys []string
@@ -49,18 +50,29 @@ func RunMigrations(ctx *context.Context) (error error) {
 		}
 
 		slog.Info("Running migration: " + migration)
-		if error = migrations[migration].Up(ctx); error != nil {
+		if migrationError := migrations[migration].Up(ctx); migrationError != nil {
 			slog.Warn("Failed migration: " + migration)
 			if error = migrations[migration].Down(ctx); error != nil {
 				slog.Warn("Failed migration rollback: " + migration)
 			}
 			updateSchemaVersion(ctx, migration, exists, false)
+			return migrationError
 		} else {
 			updateSchemaVersion(ctx, migration, exists, true)
 		}
+
 	}
 
 	return error
+}
+
+func createPgcryptoExtension(ctx *context.Context) {
+	_, err := db.Pool.Exec(*ctx, `CREATE EXTENSION IF NOT EXISTS "pgcrypto";`)
+
+	if err != nil {
+		db.Pool.Close()
+		log.Fatalf("Error creating pgcrypto extension")
+	}
 }
 
 func checkSchemaVersion(ctx *context.Context) {

@@ -63,8 +63,10 @@ func main() {
 	err = migrations.RunMigrations(&context)
 	if err != nil {
 		slog.Warn(err.Error())
+		slog.Info("Migrations NOOK :(")
+	}else{
+		slog.Info("Migrations OK!")
 	}
-	slog.Info("Migrations OK!")
 
 	srv := server.New(&context)
 	slog.Info("Server running at " + srv.Addr + "!")

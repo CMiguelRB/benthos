@@ -12,7 +12,7 @@ func init() {
 func up(ctx *context.Context) (err error) {
 
 	query := `CREATE TABLE IF NOT EXISTS users (
-		id uuid DEFAULT uuid_generate_v4() NOT NULL,
+		id uuid DEFAULT gen_random_uuid() NOT NULL,
 		username varchar NOT NULL,
 		"password" varchar NOT NULL,
 		created_at timestamptz DEFAULT now() NOT NULL,
