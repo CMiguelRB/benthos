@@ -78,7 +78,7 @@ func InitConfiguration() {
 			//App
 			Settings.App.Version = Version
 			//DB
-			dbPassword, err := loadSecret("db_password")
+			dbPassword, err := loadSecret("benthos_db_password")
 			if err != nil {
 				log.Fatal("DB Password secret not found")
 			}
