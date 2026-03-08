@@ -22,11 +22,6 @@ jobs:
       - run: go test -v ./...
   build:
     needs: test
-    strategy:
-      matrix:
-        goosarch:
-          - 'linux/arm64'
-          - 'windows/amd64'
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -37,17 +32,14 @@ jobs:
         go-version-file: 'go.mod'
     - name: Get OS and arch info
       run: |
-        GOOSARCH=${{matrix.goosarch}}
-        GOOS=${GOOSARCH%/*}
+        GOOS="linux"
+        GOARCH="arm64"
+        CGO_ENABLED=0
         VERSION=${GITHUB_REF#refs/*/}
-        EXTENSION=''
-        if [ $GOOS = "windows" ]; then
-            EXTENSION='.exe'
-        fi
-        GOARCH=${GOOSARCH#*/}
         BINARY_NAME=${{github.repository}}-$GOOS-$GOARCH-$VERSION.$EXTENSION
         echo "BINARY_NAME=$BINARY_NAME" >> $GITHUB_ENV
         echo "GOOS=$GOOS" >> $GITHUB_ENV
+        echo "CGO_ENABLED=$CGO_ENABLED" >> $GITHUB_ENV
         echo "GOARCH=$GOARCH" >> $GITHUB_ENV
         echo "VERSION=$VERSION" >> $GITHUB_ENV
     - name: Build
