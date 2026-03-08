@@ -292,3 +292,35 @@ go build -v -ldflags "-X benthos/config.Version=v0.0.0"
 
 v0.0.0 -> your app version. The GH action does this for you at build stage based on the pushed tag.
 ```
+
+## Docker
+
+Minimal Docker run setup:
+
+Executed where the Dockerfile is:
+
+```docker buildx build --no-cache --load -t benthos .```
+
+Minimal `docker-compose` configuration:
+
+```
+services:
+  benthos:
+    image: benthos
+    container_name: benthos
+    depends_on:
+      - db ## Database image
+    environment:
+	 - ... ## Environment variables
+    ports:
+      - "XXXX:XXXX"
+    restart: "unless-stopped"
+    secrets:
+      - ... ## Secrets
+```
+
+And then, run:
+
+```docker compose up -d benthos```
+
+**Remember that a database must be up and configured for benthos to work!**
