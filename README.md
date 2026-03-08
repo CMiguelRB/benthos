@@ -295,7 +295,7 @@ v0.0.0 -> your app version. The GH action does this for you at build stage based
 
 ## Docker
 
-Minimal Docker run setup:
+Minimal Docker setup:
 
 Executed where the Dockerfile is:
 
@@ -309,7 +309,7 @@ services:
     image: benthos
     container_name: benthos
     depends_on:
-      - db ## Database image
+      - db ## Database service
     environment:
 	 - ... ## Environment variables
     ports:
