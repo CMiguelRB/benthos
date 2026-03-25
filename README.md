@@ -5,7 +5,7 @@ benthos is a backend service written in go, meant to be used as a starting point
 
 ## Environment variables
 
-Environment variables must either exists in the os environment variables or in a .env file. This is an .env file example. 
+Environment variables must either exist in the os environment variables or in a .env file. This is an .env file example. 
 
 ```
 .env
