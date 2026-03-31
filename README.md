@@ -17,6 +17,9 @@ DB_HOSTNAME="localhost"
 DB_PORT="5432"
 DB_NAME="TEST"
 ENCRYPTION_KEY="32 bit HEX encryption key" ## Used for credentials encryption
+WEB_STATIC_ENABLED=true                    ## Tell the server if a web fronted has to be served
+WEB_STATIC_DIR=./frontend/dist             ## Static frontend files path
+
 ```
 
 ## Configuration
