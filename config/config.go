@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -22,10 +23,12 @@ type App struct {
 }
 
 type Server struct {
-	RateLimit    RateLimit
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	IdleTimeout  time.Duration
+	RateLimit        RateLimit
+	ReadTimeout      time.Duration
+	WriteTimeout     time.Duration
+	IdleTimeout      time.Duration
+	WebStaticEnabled bool
+	WebStaticDir     string
 }
 
 type RateLimit struct {
@@ -38,7 +41,7 @@ type Database struct {
 	Port     string
 	Username string
 	Password string
-	Name string
+	Name     string
 }
 
 type Security struct {
@@ -65,6 +68,14 @@ func InitConfiguration() {
 		//Server RateLimit
 		Settings.Server.RateLimit.Requests = 10
 		Settings.Server.RateLimit.Period = 10000
+
+		webStaticEnabled, _ := strconv.ParseBool(os.Getenv("WEB_STATIC_ENABLED"))
+		Settings.Server.WebStaticEnabled = webStaticEnabled
+
+		if webStaticEnabled {
+			Settings.Server.WebStaticDir = os.Getenv("WEB_STATIC_DIR")
+		}
+
 		//DB
 		Settings.Database.Hostname = os.Getenv("DB_HOSTNAME")
 		Settings.Database.Port = os.Getenv("DB_PORT")
@@ -82,7 +93,7 @@ func InitConfiguration() {
 			if err != nil {
 				log.Fatal("DB Password secret not found")
 			}
-			Settings.Database.Password = dbPassword;
+			Settings.Database.Password = dbPassword
 			//Security
 			encryptionKey, err := loadSecret("benthos_encryption_key")
 			if err != nil {
